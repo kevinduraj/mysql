@@ -1,0 +1,68 @@
+#!/bin/bash
+# mysql_config_editor set --login-path=local --host=localhost --user=root --password
+nicenumber()
+{
+  # Note that we assume that  '.' is the decimal separator in
+  # the INPUT value to this script. The decimal separator in the output value is
+  # '.' unless specified by the user with the -d flag
+
+  integer=$(echo $1 | cut -d. -f1)              # left of the decimal
+  decimal=$(echo $1 | cut -d. -f2)              # right of the decimal
+
+  if [ $decimal != $1 ]; then
+    # There's a fractional part, so let's include it.
+    result="${DD:="."}$decimal"
+  fi
+
+  thousands=$integer
+
+  while [ $thousands -gt 999 ]; do
+    remainder=$(($thousands % 1000))    # three least significant digits
+
+    while [ ${#remainder} -lt 3 ] ; do  # force leading zeros as needed
+      remainder="0$remainder"
+    done
+
+    thousands=$(($thousands / 1000))    # to left of remainder, if any
+    result="${TD:=","}${remainder}${result}"    # builds right to left
+  done
+
+  nicenum="${thousands}${result}"
+  if [ ! -z $2 ] ; then
+    echo $nicenum 
+
+    NOW=$(date +"%Y-%m-%d %H:%M")
+    echo "$NOW | $nicenum | $1" >> $mydb.dat
+    cat $mydb.dat
+  fi
+}
+
+count()
+{
+  USERNAME=root
+  DATABASE=$1
+                       
+  TABLE_LIST=`mysql --login-path=local -NB -e "SHOW TABLES FROM $DATABASE"`
+  TOTAL=0
+  for E in $TABLE_LIST
+  do
+      #echo "Total count: "$DATABASE"."$E
+      RES=`mysql --login-path=local -NB -e  "SELECT COUNT(*) FROM "$DATABASE"."$E`
+      ((RES=$RES+0))
+      ((TOTAL=$RES+$TOTAL))
+      echo $TOTAL $E $RES
+  done
+  
+  echo "Total records: ";
+  nicenumber $TOTAL 1
+
+}
+
+mydb="engine$1"
+
+for db in $mydb
+do
+    echo "Database: is [$db]"
+    count $db
+done
+

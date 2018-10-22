@@ -1,0 +1,81 @@
+#
+# These groups are read by MariaDB server.
+# Use it for options that only the server (but not clients) should see
+#
+# See the examples of server my.cnf files in /usr/share/mysql/
+#
+
+# this is read by the standalone daemon and embedded servers
+[server]
+
+#-----------------------------------------------------------------------------------#
+# mysqld standalone daemon
+#-----------------------------------------------------------------------------------#
+[mysqld]
+key_buffer		           = 512M 
+max_allowed_packet	     = 16M
+table_open_cache         = 4096
+thread_stack		         = 192K
+thread_cache_size        = 8
+sort_buffer_size         = 128M  # Used for: ALTER, OPTIMIZE, REPAIR TABLE 
+read_buffer_size 	       = 8M
+read_rnd_buffer_size 	   = 16M
+myisam_sort_buffer_size  = 64M
+
+myisam-recover           = BACKUP
+max_connections          = 512 
+table_cache              = 16384 
+thread_concurrency       = 32 
+
+#-----------------------------------------------------------------------------------#
+# * Query Cache Configuration
+# --query_cache_type -- 
+# 0 or OFF prevents caching or retrieval of cached results.
+# 1 or ON enables caching except of those statements that begin with SELECT SQL_NO_CACHE.
+# 2 or DEMAND causes caching of only those statements that begin with SELECT SQL_CACHE
+query_cache_type         = 1
+query_cache_min_res_unit = 1M
+query_cache_limit	       = 512M
+query_cache_size         = 512M
+
+open-files-limit         = 32768
+concurrent_insert        = 2 
+bulk_insert_buffer_size  = 16M
+
+delayed_insert_limit     = 100 
+delayed_insert_timeout   = 300 
+delayed_queue_size       = 1000
+
+#-----------------------------------------------------------------------------------#
+# * Galera-related settings
+#-----------------------------------------------------------------------------------#
+[galera]
+# Mandatory settings
+#wsrep_on=ON
+#wsrep_provider=
+#wsrep_cluster_address=
+#binlog_format=row
+#default_storage_engine=InnoDB
+#innodb_autoinc_lock_mode=2
+#
+# Allow server to accept connections on all interfaces.
+#
+#bind-address=0.0.0.0
+#
+# Optional setting
+#wsrep_slave_threads=1
+#innodb_flush_log_at_trx_commit=0
+
+# this is only for embedded server
+[embedded]
+
+# This group is only read by MariaDB servers, not by MySQL.
+# If you use the same .cnf file for MySQL and MariaDB,
+# you can put MariaDB-only options here
+[mariadb]
+
+# This group is only read by MariaDB-10.1 servers.
+# If you use the same .cnf file for MariaDB of different versions,
+# use this group for options that older servers don't understand
+[mariadb-10.1]
+

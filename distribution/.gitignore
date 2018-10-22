@@ -1,0 +1,4 @@
+*.dat
+nohup.out
+mariadb/delete/nohup.out
+
